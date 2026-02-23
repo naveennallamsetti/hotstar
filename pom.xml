@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>in.reyaz</groupId>
-    <artifactId>myapp</artifactId>
+    <artifactId>myhotstar</artifactId>
     <version>8.3.3-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>myapp</name>
