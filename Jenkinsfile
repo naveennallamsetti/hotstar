@@ -5,7 +5,6 @@ pipeline {
         DOCKER_IMAGE = "naveennallamsetti/docker-my-images"
         IMAGE_TAG = "${BUILD_NUMBER}"
     }
-
     stages {
 
         stage('Git Checkout') {
@@ -19,7 +18,6 @@ pipeline {
                 )
             }
         }
-
         stage('Validate') {
             steps {
                 sh 'mvn validate'
@@ -31,19 +29,16 @@ pipeline {
                 sh 'mvn compile'
             }
         }
-
         stage('Test') {
             steps {
                 sh 'mvn test'
             }
         }
-
         stage('Package') {
             steps {
                 sh 'mvn package'
             }
         }
-
         stage('Docker Build') {
             steps {
                 sh """
@@ -52,7 +47,6 @@ pipeline {
                 """
             }
         }
-
         stage('Docker Login') {
             steps {
                 withCredentials([usernamePassword(
@@ -64,7 +58,6 @@ pipeline {
                 }
             }
         }
-
         stage('Docker Push') {
             steps {
                 sh """
@@ -73,7 +66,6 @@ pipeline {
                 """
             }
         }
-
         stage('Deploy Container') {
             steps {
                 sh """
@@ -82,7 +74,6 @@ pipeline {
                 """
             }
         }
-
         stage('Cleanup Local Images') {
             steps {
                 sh """
@@ -91,6 +82,5 @@ pipeline {
                 """
             }
         }
-
     }
 }
