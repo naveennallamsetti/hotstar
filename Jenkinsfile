@@ -9,15 +9,9 @@ pipeline {
 
         stage('Git Checkout') {
             steps {
-                checkout scmGit(
-                    branches: [[name: '*/master']],
-                    userRemoteConfigs: [[
-                        credentialsId: 'naveencred',
-                        url: 'https://github.com/naveennallamsetti/hotstar.git'
-                    ]]
-                )
-            }
+            checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'naveencred', url: 'https://github.com/naveennallamsetti/hotstar.git']])
         }
+}
         stage('Validate') {
             steps {
                 sh 'mvn validate'
