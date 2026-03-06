@@ -91,6 +91,14 @@ pipeline {
                 """
             }
         }
+	stage('Cleanup Local Images') {
+            steps {
+                sh """
+                docker image prune -f
+                docker container prune -f
+                """
+            }
+        }
 
     }
 }
