@@ -29,7 +29,7 @@ pipeline{
       stage('Docker Image Build') {
             steps {
                 sh 'docker rmi project1 || true'
-                sh 'docker build -t project3 .'
+                sh 'docker build -t project1 .'
             }
         }
         stage('Deploy Container') {
