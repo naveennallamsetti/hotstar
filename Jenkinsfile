@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = "naveennallamsetti/docker-my-images"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
+
     stages {
 
         stage('Git Checkout') {
@@ -41,19 +46,49 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh '''
-                docker rmi project1 || true
-                docker build -t project1 .
-                '''
+                sh """
+                docker build -t ${DOCKER_IMAGE}:${IMAGE_TAG} .
+                docker tag ${DOCKER_IMAGE}:${IMAGE_TAG} ${DOCKER_IMAGE}:latest
+                """
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-cred',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                sh """
+                docker push ${DOCKER_IMAGE}:${IMAGE_TAG}
+                docker push ${DOCKER_IMAGE}:latest
+                """
             }
         }
 
         stage('Deploy Container') {
             steps {
-                sh '''
+                sh """
                 docker rm -f project1-container || true
-                docker run -d -p 8093:8080 --name project1-container project1
-                '''
+                docker run -d -p 8093:8080 --name project1-container ${DOCKER_IMAGE}:${IMAGE_TAG}
+                """
+            }
+        }
+
+        stage('Cleanup Local Images') {
+            steps {
+                sh """
+                docker image prune -f
+                docker container prune -f
+                """
             }
         }
 
