@@ -13,7 +13,7 @@ pipeline {
                 checkout scmGit(
                     branches: [[name: '*/master']],
                     userRemoteConfigs: [[
-                        credentialsId: 'naveencred',
+                        credentialsId: 'naveen-git',
                         url: 'https://github.com/naveennallamsetti/hotstar.git'
                     ]]
                 )
@@ -56,7 +56,7 @@ pipeline {
         stage('Docker Login') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'naveendoc-cred',
+                    credentialsId: 'naveen-docker',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
