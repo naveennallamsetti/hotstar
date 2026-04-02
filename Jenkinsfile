@@ -107,7 +107,7 @@ pipeline {
             steps {
                 sh """
                 docker rm -f project1-container || true
-                docker run -d -p 8093:8080 --name project1-container ${DOCKER_IMAGE}:${IMAGE_TAG}
+                docker run -d -p 9000:9000 --name project1-container ${DOCKER_IMAGE}:${IMAGE_TAG}
                 """
             }
         }
