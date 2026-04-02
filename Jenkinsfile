@@ -1,9 +1,15 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'maven3'
+        jdk 'jdk17'
+    }
+
     environment {
         DOCKER_IMAGE = "naveennallamsetti/docker-my-images"
         IMAGE_TAG = "${BUILD_NUMBER}"
+        SONARQUBE_ENV = 'sq'
     }
 
     stages {
@@ -20,15 +26,9 @@ pipeline {
             }
         }
 
-        stage('Validate') {
+        stage('Build') {
             steps {
-                sh 'mvn validate'
-            }
-        }
-
-        stage('Compile') {
-            steps {
-                sh 'mvn compile'
+                sh 'mvn clean compile'
             }
         }
 
@@ -38,9 +38,38 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Package') {
             steps {
                 sh 'mvn package'
+            }
+        }
+
+        stage('Deploy to Nexus') {
+            steps {
+                withMaven(
+                    globalMavenSettingsConfig: 'setting.xml',
+                    jdk: 'jdk17',
+                    maven: 'maven3',
+                    traceability: true
+                ) {
+                    sh 'mvn deploy'
+                }
             }
         }
 
